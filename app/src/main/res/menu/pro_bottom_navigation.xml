@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_one"
+        android:enabled="true"
+        android:icon="@drawable/one_selector"
+        android:title="@string/mvp"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_second"
+        android:enabled="true"
+        android:icon="@drawable/second_selector"
+        android:title="@string/mvvm"
+        app:showAsAction="always" />
+
+</menu>
