@@ -21,14 +21,17 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hardtm.daggerpro.DaggerProApp
 import com.hardtm.daggerpro.R
 import com.hardtm.daggerpro.db.DaggerProDatabase
 import com.hardtm.daggerpro.db.JokeEntity
+import com.hardtm.daggerpro.rest.JokeAPI
 import com.hardtm.daggerpro.rest.JokeService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_two.*
+import javax.inject.Inject
 
 class FragmentTwo : Fragment() {
 
@@ -36,6 +39,14 @@ class FragmentTwo : Fragment() {
     private lateinit var jokeViewModel: JokeViewModel
     private lateinit var database: DaggerProDatabase
     private var disposables = CompositeDisposable()
+
+    @Inject
+    lateinit var jokeApi: JokeAPI
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        DaggerProApp.appComponent.inject(this)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,7 +85,7 @@ class FragmentTwo : Fragment() {
     }
 
     private fun getJokeData() {
-        val disposable = JokeService().api.getJokes("anekdot.ru", "new anekdot", "15")
+        val disposable = jokeApi.getJokes("anekdot.ru", "new anekdot", "15")
             .subscribeOn(Schedulers.io())
             .map { jokeResponse ->
                 if (jokeResponse.isSuccessful) {
@@ -104,11 +115,12 @@ class FragmentTwo : Fragment() {
                 swipeTwo.isRefreshing = false
                 Toast.makeText(context, throwableError.message, Toast.LENGTH_LONG).show()
             })
+
         disposables.add(disposable)
     }
 
     private fun itemClicked(jokeItem: Int) {
-        for (i in 1..jokeItem){
+        for (i in 1..jokeItem) {
             snowShower()
         }
     }
@@ -129,7 +141,8 @@ class FragmentTwo : Fragment() {
         newSnowflake.setImageResource(R.drawable.ic_snow_24dp)
         newSnowflake.layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT)
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
         container.addView(newSnowflake)
 
         newSnowflake.scaleX = Math.random().toFloat() * 1.8f + .1f
@@ -139,11 +152,18 @@ class FragmentTwo : Fragment() {
 
         newSnowflake.translationX = Math.random().toFloat() * containerW - snowflakeW / 2
 
-        val mover = ObjectAnimator.ofFloat(newSnowflake, View.TRANSLATION_Y, -snowflakeH, containerH + snowflakeH)
+        val mover = ObjectAnimator.ofFloat(
+            newSnowflake,
+            View.TRANSLATION_Y,
+            -snowflakeH,
+            containerH + snowflakeH
+        )
         mover.interpolator = AccelerateInterpolator(0.5f)
 
-        val rotator = ObjectAnimator.ofFloat(newSnowflake, View.ROTATION,
-            (Math.random() * 1080).toFloat())
+        val rotator = ObjectAnimator.ofFloat(
+            newSnowflake, View.ROTATION,
+            (Math.random() * 1080).toFloat()
+        )
         rotator.interpolator = LinearInterpolator()
 
         val set = AnimatorSet()

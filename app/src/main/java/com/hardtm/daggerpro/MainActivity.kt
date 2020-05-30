@@ -7,7 +7,9 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hardtm.daggerpro.mvp.FragmentOne
 import com.hardtm.daggerpro.mvvm.FragmentTwo
+import com.hardtm.daggerpro.rest.JokeAPI
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DaggerProApp.appComponent.inject(this)
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorYellow)
         setContentView(R.layout.activity_main)
