@@ -1,8 +1,6 @@
 package com.hardtm.daggerpro.di
-
-import com.hardtm.daggerpro.BuildConfig
-import com.hardtm.daggerpro.rest.BashAPI
-import com.hardtm.daggerpro.rest.JokeAPI
+import com.hardtm.daggerpro.features.bash.retrofit.BashAPI
+import com.hardtm.daggerpro.features.jokes.retrofit.JokeAPI
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -26,9 +24,7 @@ class NetworkModule {
                 addInterceptor(
                     HttpLoggingInterceptor()
                         .apply {
-                            if (BuildConfig.DEBUG) {
-                                level = HttpLoggingInterceptor.Level.BODY
-                            }
+                            level = HttpLoggingInterceptor.Level.BODY
                         })
             }
             .build()
@@ -44,11 +40,11 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideJokeApi(retrofit: Retrofit): JokeAPI =
-        retrofit.create(JokeAPI::class.java)
+    fun provideBashApi(retrofit: Retrofit): BashAPI =
+        retrofit.create(BashAPI::class.java)
 
     @Provides
     @Singleton
-    fun provideBashApi(retrofit: Retrofit): BashAPI =
-        retrofit.create(BashAPI::class.java)
+    fun provideJokesApi(retrofit: Retrofit): JokeAPI =
+        retrofit.create(JokeAPI::class.java)
 }

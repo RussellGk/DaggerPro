@@ -25,8 +25,7 @@ import com.hardtm.daggerpro.DaggerProApp
 import com.hardtm.daggerpro.R
 import com.hardtm.daggerpro.db.DaggerProDatabase
 import com.hardtm.daggerpro.db.JokeEntity
-import com.hardtm.daggerpro.rest.JokeAPI
-import com.hardtm.daggerpro.rest.JokeService
+import com.hardtm.daggerpro.features.jokes.retrofit.JokeAPI
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

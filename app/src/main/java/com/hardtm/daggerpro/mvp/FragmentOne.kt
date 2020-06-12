@@ -29,6 +29,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_one.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class FragmentOne : Fragment() {
 
@@ -74,37 +76,39 @@ class FragmentOne : Fragment() {
     }
 
     private fun getBashData() {
-        val disposable = BashService().api.getBash("bash.im", "bash", "16")
-            .subscribeOn(Schedulers.io())
-            .map { bashResponse ->
-                if (bashResponse.isSuccessful) {
-                    val bashList = bashResponse.body()
-                    if (!bashList.isNullOrEmpty()) {
-                        val bash = mutableListOf<BashEntity>()
-                        bashList.forEachIndexed { index, bashStory ->
-                            if (index != 0) {
-                                bash.add(
-                                    BashEntity(
-                                        index, HtmlCompat.fromHtml(
-                                            bashStory.elementPureHtml.toString(),
-                                            HtmlCompat.FROM_HTML_MODE_LEGACY
-                                        ).toString()
-                                    )
-                                )
-                            }
-                        }
-                        database.bashDao().saveBashList(bash)
-                    }
-                }
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                swipeOne.isRefreshing = false
-            }, { throwableError ->
-                swipeOne.isRefreshing = false
-                Toast.makeText(context, throwableError.message, Toast.LENGTH_LONG).show()
-            })
-        disposables.add(disposable)
+        GlobalScope.launch {
+            BashService().api.getBash("bash.im", "bash", "16")
+        }
+
+//            .subscribeOn(Schedulers.io())
+//            .map { bashResponse ->
+//                if (bashResponse.isSuccessful) {
+//                    val bashList = bashResponse.body()
+//                    if (!bashList.isNullOrEmpty()) {
+//                        val bash = mutableListOf<BashEntity>()
+//                        bashList.forEachIndexed { index, bashStory ->
+//                            if (index != 0) {
+//                                bash.add(
+//                                    BashEntity(
+//                                        index, HtmlCompat.fromHtml(
+//                                            bashStory.elementPureHtml.toString(),
+//                                            HtmlCompat.FROM_HTML_MODE_LEGACY
+//                                        ).toString()
+//                                    )
+//                                )
+//                            }
+//                        }
+//                        database.bashDao().saveBashList(bash)
+//                    }
+//                }
+//            }
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                swipeOne.isRefreshing = false
+//            }, { throwableError ->
+//                swipeOne.isRefreshing = false
+//                Toast.makeText(context, throwableError.message, Toast.LENGTH_LONG).show()
+//            })
     }
 
     private fun itemClicked(bashItem: Int) {

@@ -1,6 +1,7 @@
 package com.hardtm.daggerpro.rest
 
 import com.hardtm.daggerpro.BuildConfig
+import com.hardtm.daggerpro.features.jokes.retrofit.JokeAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,7 +28,8 @@ class JokeService(
         .build()
 
 ) {
-    val api: JokeAPI = retrofit.create(JokeAPI::class.java)
+    val api: JokeAPI = retrofit.create(
+        JokeAPI::class.java)
 
     companion object {
         private const val baseUrl = "http://umorili.herokuapp.com/api/"

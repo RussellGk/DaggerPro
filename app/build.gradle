@@ -57,6 +57,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha06'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation "androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03"
+
+    api project(":data")
+
     //Retrofit2 and OkHttp3
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_ver"

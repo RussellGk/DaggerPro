@@ -27,7 +27,8 @@ class BashService(
         .build()
 
 ) {
-    val api: BashAPI = retrofit.create(BashAPI::class.java)
+    val api: com.hardtm.daggerpro.features.bash.retrofit.BashAPI = retrofit.create(
+        com.hardtm.daggerpro.features.bash.retrofit.BashAPI::class.java)
 
     companion object {
         private const val baseUrl = "http://umorili.herokuapp.com/api/"
