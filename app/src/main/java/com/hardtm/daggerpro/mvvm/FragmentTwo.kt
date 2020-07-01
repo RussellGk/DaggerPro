@@ -37,11 +37,13 @@ class FragmentTwo : Fragment() {
 
     private lateinit var snowflake: ImageView
     private lateinit var jokeViewModel: JokeViewModel
-    private lateinit var database: DaggerProDatabase
     private var disposables = CompositeDisposable()
 
     @Inject
     lateinit var jokeApi: JokeAPI
+
+    @Inject
+    lateinit var database: DaggerProDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DaggerProApp.appComponent.inject(this)
@@ -58,6 +60,13 @@ class FragmentTwo : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        jokeViewModel = ViewModelProvider(this).get(JokeViewModel::class.java)
+        jokeViewModel.database = database
+
+        database.jokeDao().getJokeList().observe(viewLifecycleOwner, Observer { jokesList ->
+            recyclerTwo.adapter = JokesRecyclerAdapter(jokesList,
+                { jokeItem: String -> itemClicked(jokeItem.toInt()) })
+        })
 
         snowflake = activity!!.findViewById(R.id.snowflake)
         val swipeColor = ContextCompat.getColor(context!!, R.color.colorGreen)
@@ -65,13 +74,6 @@ class FragmentTwo : Fragment() {
         swipeTwo.setOnRefreshListener {
             getJokeData()
         }
-
-        database = DaggerProDatabase.getDatabase(activity?.applicationContext!!)
-        jokeViewModel = ViewModelProvider(this).get(JokeViewModel::class.java)
-        jokeViewModel.jokeList.observe(viewLifecycleOwner, Observer { jokeEntityList ->
-            recyclerTwo.adapter = JokesRecyclerAdapter(jokeEntityList,
-                { jokeItem: String -> itemClicked(jokeItem.toInt()) })
-        })
 
         recyclerTwo.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

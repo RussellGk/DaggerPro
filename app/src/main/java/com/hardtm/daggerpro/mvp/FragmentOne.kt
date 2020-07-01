@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hardtm.daggerpro.DaggerProApp
 import com.hardtm.daggerpro.R
 import com.hardtm.daggerpro.db.BashEntity
 import com.hardtm.daggerpro.db.DaggerProDatabase
@@ -29,13 +30,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_one.*
+import javax.inject.Inject
 
 class FragmentOne : Fragment() {
 
     private lateinit var star: ImageView
     private lateinit var bashViewModel: BashViewModel
-    private lateinit var database: DaggerProDatabase
     private var disposables = CompositeDisposable()
+
+    @Inject
+    lateinit var database: DaggerProDatabase
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        DaggerProApp.appComponent.inject(this)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,12 +64,11 @@ class FragmentOne : Fragment() {
             getBashData()
         }
 
-        database = DaggerProDatabase.getDatabase(activity?.applicationContext!!)
         bashViewModel = ViewModelProvider(this).get(BashViewModel::class.java)
-        bashViewModel.bashList.observe(viewLifecycleOwner, Observer { bashEntityList ->
-            recyclerOne.adapter = BashRecyclerAdapter(bashEntityList,
-                { bashItem: String -> itemClicked(bashItem.toInt()) })
-        })
+//        bashViewModel.bashList.observe(viewLifecycleOwner, Observer { bashEntityList ->
+//            recyclerOne.adapter = BashRecyclerAdapter(bashEntityList,
+//                { bashItem: String -> itemClicked(bashItem.toInt()) })
+//        })
 
         recyclerOne.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

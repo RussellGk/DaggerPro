@@ -9,11 +9,11 @@ import com.hardtm.daggerpro.db.DaggerProDatabase
 
 class BashViewModel(application: Application) : AndroidViewModel(application) {
 
-    val bashList: LiveData<List<BashEntity>>
-    val bashDao: BashDao
+//    val bashList: LiveData<List<BashEntity>>
+//    val bashDao: BashDao
 
     init {
-        bashDao = DaggerProDatabase.getDatabase(application).bashDao()
-        bashList = bashDao.getBashList()
+//        bashDao = DaggerProDatabase.getDatabase(application).bashDao()
+//        bashList = bashDao.getBashList()
     }
 }

@@ -7,11 +7,11 @@ import com.hardtm.daggerpro.db.*
 
 class JokeViewModel(application: Application) : AndroidViewModel(application) {
 
-    val jokeList: LiveData<List<JokeEntity>>
-    val jokeDao: JokeDao
+    var database: DaggerProDatabase? = null
+    var jokeList: LiveData<List<JokeEntity>>? = null
 
     init {
-        jokeDao = DaggerProDatabase.getDatabase(application).jokeDao()
-        jokeList = jokeDao.getJokeList()
+        val jokeDao = database?.jokeDao()
+        jokeList = jokeDao?.getJokeList()
     }
 }
