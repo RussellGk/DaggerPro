@@ -1,4 +1,4 @@
-package com.hardtm.daggerpro.mvvm
+package com.hardtm.daggerpro.jokes
 
 import android.content.Context
 import android.view.LayoutInflater

@@ -6,13 +6,13 @@
         android:id="@+id/action_one"
         android:enabled="true"
         android:icon="@drawable/one_selector"
-        android:title="@string/mvp"
+        android:title="@string/bash"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_second"
         android:enabled="true"
         android:icon="@drawable/second_selector"
-        android:title="@string/mvvm"
+        android:title="@string/jokes"
         app:showAsAction="always" />
 
 </menu>

@@ -1,4 +1,4 @@
-package com.hardtm.daggerpro.mvp
+package com.hardtm.daggerpro.bash
 
 import android.content.Context
 import android.view.LayoutInflater
