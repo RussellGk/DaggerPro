@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardtm.daggerpro.DaggerProApp
 import com.hardtm.daggerpro.R
-import com.hardtm.daggerpro.db.DaggerProDatabase
 import com.hardtm.daggerpro.rest.BashAPI
 import kotlinx.android.synthetic.main.fragment_bash.*
 import javax.inject.Inject
@@ -30,7 +29,6 @@ class FragmentBash : Fragment() {
 
     private lateinit var star: ImageView
     private lateinit var bashViewModel: BashViewModel
-    private lateinit var database: DaggerProDatabase //TODO inject
 
     @Inject
     lateinit var bashApi: BashAPI
@@ -58,21 +56,20 @@ class FragmentBash : Fragment() {
             bashViewModel.getBashData()
         }
 
-        database = DaggerProDatabase.getDatabase(requireActivity().application)
         bashViewModel = ViewModelProvider(this, BashVmFactory(application = requireActivity().application , injectedBashApi = bashApi)).get(BashViewModel::class.java)
         bashViewModel.bashList.observe(viewLifecycleOwner, Observer { bashEntityList ->
             recyclerOne.adapter = BashRecyclerAdapter(bashEntityList,
                 { bashItem: String -> itemClicked(bashItem.toInt()) })
-            swipeOne.isRefreshing = false
+        })
+        bashViewModel.defaultProgressLiveData.observe(viewLifecycleOwner, Observer { isProgress ->
+            swipeOne.isRefreshing  = isProgress
         })
 
         recyclerOne.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
 
-        val bashDBList = database.bashDao().getBashList().value
-        if (bashDBList.isNullOrEmpty()) {
-            swipeOne.isRefreshing = true
+        if(bashViewModel.bashList.value.isNullOrEmpty()){
             bashViewModel.getBashData()
         }
     }

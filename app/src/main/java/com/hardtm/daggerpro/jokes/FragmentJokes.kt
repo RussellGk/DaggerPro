@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardtm.daggerpro.DaggerProApp
 import com.hardtm.daggerpro.R
-import com.hardtm.daggerpro.db.DaggerProDatabase
 import com.hardtm.daggerpro.rest.JokeAPI
 import kotlinx.android.synthetic.main.fragment_jokes.*
 import javax.inject.Inject
@@ -30,13 +29,12 @@ class FragmentJokes : Fragment() {
 
     private lateinit var snowflake: ImageView
     private lateinit var jokeViewModel: JokeViewModel
-    private lateinit var database: DaggerProDatabase //TODO inject
 
     @Inject
     lateinit var jokeApi: JokeAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DaggerProApp.appComponent.inject(this)
+        DaggerProApp.appComponent.inject(this)//Call it before onCreate
         super.onCreate(savedInstanceState)
     }
 
@@ -52,28 +50,27 @@ class FragmentJokes : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         snowflake = requireActivity().findViewById(R.id.snowflake)
-
-        database = DaggerProDatabase.getDatabase(activity?.applicationContext!!)
-        jokeViewModel = ViewModelProvider(this, JokesVmFactory(application = requireActivity().application , injectedJokeApi = jokeApi)).get(JokeViewModel::class.java)
-        jokeViewModel.jokeList.observe(viewLifecycleOwner, Observer { jokeEntityList ->
-            recyclerTwo.adapter = JokesRecyclerAdapter(jokeEntityList,
-                { jokeItem: String -> itemClicked(jokeItem.toInt()) })
-            swipeTwo.isRefreshing = false
-        })
-
-        recyclerTwo.apply {
-            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        }
-
         val swipeColor = ContextCompat.getColor(requireContext(), R.color.colorGreen)
         swipeTwo.setColorSchemeColors(swipeColor, swipeColor, swipeColor)
         swipeTwo.setOnRefreshListener {
             jokeViewModel.getJokeData()
         }
 
-        val jokeDBList = database.jokeDao().getJokeList().value
-        if (jokeDBList.isNullOrEmpty()) {
-            swipeTwo.isRefreshing = true
+        jokeViewModel = ViewModelProvider(this, JokesVmFactory(application = requireActivity().application , injectedJokeApi = jokeApi)).get(JokeViewModel::class.java)
+        jokeViewModel.jokeList.observe(viewLifecycleOwner, Observer { jokeEntityList ->
+            recyclerTwo.adapter = JokesRecyclerAdapter(jokeEntityList,
+                { jokeItem: String -> itemClicked(jokeItem.toInt()) })
+        })
+
+        jokeViewModel.defaultProgressLiveData.observe(viewLifecycleOwner, Observer { isProgress ->
+            swipeTwo.isRefreshing = isProgress
+        })
+
+        recyclerTwo.apply {
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
+
+        if (jokeViewModel.jokeList.value.isNullOrEmpty()) {
             jokeViewModel.getJokeData()
         }
     }

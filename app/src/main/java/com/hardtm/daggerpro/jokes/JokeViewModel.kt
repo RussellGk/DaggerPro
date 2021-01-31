@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.hardtm.daggerpro.db.*
 import com.hardtm.daggerpro.rest.JokeAPI
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,14 +19,17 @@ class JokeViewModel(application: Application, jokeApi: JokeAPI) : AndroidViewMod
     private val jokeDao: JokeDao
     private val injectionJokeApi: JokeAPI
     val jokeList: LiveData<List<JokeEntity>>
+    val defaultProgressLiveData = MutableLiveData<Boolean>()
 
     init {
+        defaultProgressLiveData.value = false
         jokeDao = DaggerProDatabase.getDatabase(application).jokeDao()
         jokeList = jokeDao.getJokeList()
         injectionJokeApi = jokeApi
     }
 
     fun getJokeData() {
+        defaultProgressLiveData.value = true
         val disposable = injectionJokeApi.getJokes("anekdot.ru", "new anekdot", "15")
             .subscribeOn(Schedulers.io())
             .map { jokeResponse ->
@@ -50,6 +54,7 @@ class JokeViewModel(application: Application, jokeApi: JokeAPI) : AndroidViewMod
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { defaultProgressLiveData.value = false }
             .subscribe({}, { throwableError ->
                 Toast.makeText(getApplication(), throwableError.message, Toast.LENGTH_LONG).show()
                 Log.d("JOKEVIEWMODEL", throwableError.message.toString())
