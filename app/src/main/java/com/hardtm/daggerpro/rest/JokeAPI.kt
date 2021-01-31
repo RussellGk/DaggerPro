@@ -2,6 +2,7 @@ package com.hardtm.daggerpro.rest
 
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,7 +13,7 @@ interface JokeAPI {
         @Query("site") site: String,
         @Query("name") name: String,
         @Query("num") num: String
-    ): Observable<Response<List<JokeListModel>>>
+    ): Single<Response<List<JokeListModel>>>
 }
 
 data class JokeListModel(

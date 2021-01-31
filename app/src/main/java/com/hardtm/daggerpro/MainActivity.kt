@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.hardtm.daggerpro.mvp.FragmentOne
-import com.hardtm.daggerpro.mvvm.FragmentTwo
+import com.hardtm.daggerpro.bash.FragmentBash
+import com.hardtm.daggerpro.jokes.FragmentJokes
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -14,13 +14,14 @@ class MainActivity : AppCompatActivity() {
     private val navigationListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.action_one -> showFragmentOne()
-                R.id.action_second -> showFragmentSecond()
+                R.id.action_one -> showFragmentBash()
+                R.id.action_second -> showFragmentJokes()
             }
             true
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //DaggerProApp.appComponent.inject(this)//TODO Inject Dagger in Activity before onCreate
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorYellow)
         setContentView(R.layout.activity_main)
@@ -51,15 +52,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showFragmentOne() {
+    fun showFragmentBash() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerlayout, FragmentOne.newInstance(), "one")
+            .replace(R.id.fragmentContainerlayout, FragmentBash.newInstance(), "bash")
             .commit()
     }
 
-    fun showFragmentSecond() {
+    fun showFragmentJokes() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerlayout, FragmentTwo.newInstance(), "two")
+            .replace(R.id.fragmentContainerlayout, FragmentJokes.newInstance(), "jokes")
             .commit()
     }
 }
