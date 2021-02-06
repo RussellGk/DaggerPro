@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardtm.daggerpro.DaggerProApp
+import com.hardtm.daggerpro.NetworkState
+import com.hardtm.daggerpro.NetworkStateView
 import com.hardtm.daggerpro.R
 import com.hardtm.daggerpro.rest.BashAPI
 import kotlinx.android.synthetic.main.fragment_bash.*
@@ -53,7 +55,13 @@ class FragmentBash : Fragment() {
         val swipeColor = ContextCompat.getColor(requireContext(), R.color.colorGreen)
         swipeOne.setColorSchemeColors(swipeColor, swipeColor, swipeColor)
         swipeOne.setOnRefreshListener {
-            bashViewModel.getBashData()
+            if (NetworkState.isNetworkConnected){
+                bashViewModel.getBashData()
+            }
+            else {
+                swipeOne.isRefreshing = false
+                showNetworkStateOff()
+            }
         }
 
         bashViewModel = ViewModelProvider(this, BashVmFactory(application = requireActivity().application , injectedBashApi = bashApi)).get(BashViewModel::class.java)
@@ -70,7 +78,12 @@ class FragmentBash : Fragment() {
         }
 
         if(bashViewModel.bashList.value.isNullOrEmpty()){
-            bashViewModel.getBashData()
+            if (NetworkState.isNetworkConnected){
+                bashViewModel.getBashData()
+            } else {
+                swipeOne.isRefreshing = false
+                showNetworkStateOff()
+            }
         }
     }
 
@@ -78,6 +91,13 @@ class FragmentBash : Fragment() {
         for (i in 1..bashItem){
             starShower()
         }
+    }
+
+    private fun showNetworkStateOff(){
+        bashFrame.requestLayout()
+        val networkStateView = NetworkStateView(requireContext())
+        bashFrame.addView(networkStateView)
+        networkStateView.show()
     }
 
     private fun starShower() {

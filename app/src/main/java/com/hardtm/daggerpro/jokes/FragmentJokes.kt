@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hardtm.daggerpro.DaggerProApp
+import com.hardtm.daggerpro.NetworkState
+import com.hardtm.daggerpro.NetworkStateView
 import com.hardtm.daggerpro.R
 import com.hardtm.daggerpro.rest.JokeAPI
 import kotlinx.android.synthetic.main.fragment_jokes.*
@@ -53,7 +55,13 @@ class FragmentJokes : Fragment() {
         val swipeColor = ContextCompat.getColor(requireContext(), R.color.colorGreen)
         swipeTwo.setColorSchemeColors(swipeColor, swipeColor, swipeColor)
         swipeTwo.setOnRefreshListener {
-            jokeViewModel.getJokeData()
+            if (NetworkState.isNetworkConnected){
+                jokeViewModel.getJokeData()
+            }
+            else {
+                swipeTwo.isRefreshing = false
+                showNetworkStateOff()
+            }
         }
 
         jokeViewModel = ViewModelProvider(this, JokesVmFactory(application = requireActivity().application , injectedJokeApi = jokeApi)).get(JokeViewModel::class.java)
@@ -71,7 +79,12 @@ class FragmentJokes : Fragment() {
         }
 
         if (jokeViewModel.jokeList.value.isNullOrEmpty()) {
-            jokeViewModel.getJokeData()
+            if (NetworkState.isNetworkConnected){
+                jokeViewModel.getJokeData()
+            } else {
+                swipeTwo.isRefreshing = false
+                showNetworkStateOff()
+            }
         }
     }
 
@@ -79,6 +92,13 @@ class FragmentJokes : Fragment() {
         for (i in 1..jokeItem){
             snowShower()
         }
+    }
+
+    private fun showNetworkStateOff(){
+        jokesFrame.requestLayout()
+        val networkStateView = NetworkStateView(requireContext())
+        jokesFrame.addView(networkStateView)
+        networkStateView.show()
     }
 
     private fun snowShower() {
